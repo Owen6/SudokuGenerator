@@ -38,14 +38,13 @@ class Board:
          else:
               print("Invalid move")
 
-    def shuffleList(self, list, depth = 1):
-        
+    def splitList(self, list, depth = 1):
         permutations = []
         permutations.append(list)
         if depth > 3:
              return list
         else:
-            self.shuffleList(list[-3:] + list[:-3], depth + 1)
+            self.splitList(list[-3:] + list[:-3], depth + 1)
         for i in range(9):
              self.board[depth-1+self.fillCount][i] = permutations[0][i]
 
@@ -56,13 +55,36 @@ class Board:
 
         #Shuffle the list of numbers 1 to 9 by shifting the col by one and finding all permutations of 3 in the list
         for i in range(3):
-          self.shuffleList(temp)
+          self.splitList(temp)
           self.fillCount = self.fillCount + 3
           temp = temp[-1:] + temp[:-1]
+    
+    def flipRowCol(self):
+         self.board = [[self.board[j][i] for j in range(len(self.board))] for i in range(len(self.board[0]))]
+
+    def shuffleBoard(self, val = 0):
+         #Shuffle rows of board
+         shuffleSet1 = self.board[0:3].copy()
+         random.shuffle(shuffleSet1)
+         shuffleSet2 = self.board[3:6].copy()
+         random.shuffle(shuffleSet2)
+         shuffleSet3 = self.board[6:9].copy()
+         random.shuffle(shuffleSet3)
+
+         self.board = shuffleSet1 + shuffleSet2 + shuffleSet3
+
+         #Shuffle columns of board
+         if val == 0:
+              self.flipRowCol()
+              self.shuffleBoard(1)
+        
 
 def main():
      board = Board()
      board.CreatePuzzle()
+     board.displayBoard()
+     board.shuffleBoard()
+     print(' ')
      board.displayBoard()
 
 if __name__ == "__main__":
