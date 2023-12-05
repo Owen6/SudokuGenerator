@@ -1,4 +1,6 @@
 import random
+from random import randint
+import tkinter as tk
 
 
 class Board:
@@ -7,6 +9,9 @@ class Board:
 
     def __init__(self, initial_board = None):
          self.board = initial_board if initial_board is not None else [[0]*9 for _ in range(9)]
+
+    def getValue(self, row, col):
+         return self.board[row][col]
 
     def displayBoard(self):
          for row in self.board:
@@ -59,6 +64,7 @@ class Board:
           self.fillCount = self.fillCount + 3
           temp = temp[-1:] + temp[:-1]
     
+    #Flips the rows and columns of the board
     def flipRowCol(self):
          self.board = [[self.board[j][i] for j in range(len(self.board))] for i in range(len(self.board[0]))]
 
@@ -77,7 +83,41 @@ class Board:
          if val == 0:
               self.flipRowCol()
               self.shuffleBoard(1)
+    
+    def CreateSolvableBoard(self):
+         #Pick 4 random vertices
+         vertices = []
+         for v in range(4):
+            val = []
+            val2 = []
+            for i in range(2):
+                val.append(randint(0,8))
+                val2.append(8-val[i])
+            vertices.append(val)
+            vertices.append(val2)
+         newBoard = Board()
+         for j in range(len(vertices)):
+            newBoard.setValue(vertices[j][0], vertices[j][1], self.getValue(vertices[j][0], vertices[j][1]))
+         return newBoard
+
+              
         
+class SudokuGUI:
+     def __init__(self, root, board):
+          self.root = root
+          self.board = board
+          root.title("Sudoku Puzzle")
+          self.createGrid()
+     
+     def createGrid(self):
+          for i in range(9):
+               for j in range(9):
+                    value = self.board.getValue(i, j)
+                    label = tk.Label(self.root, text=value, width=4, height=2,borderwidth=1, relief="solid")
+                    label.grid(row=i, column=j)
+
+
+
 
 def main():
      board = Board()
@@ -86,6 +126,20 @@ def main():
      board.shuffleBoard()
      print(' ')
      board.displayBoard()
+     newBoard = board.CreateSolvableBoard()
+     #Create Window
+     window = tk.Tk()
+     #window2 = tk.Tk()
+     #disp = SudokuGUI(window, board)
+     #disp2 = SudokuGUI(window2, newBoard)
+     #Diaplay window
+     createWindow(window, board)
+     createWindow(tk.Toplevel(window), newBoard)
+     window.mainloop()
+
+def createWindow(window, board):
+     disp = SudokuGUI(window, board)
+     
 
 if __name__ == "__main__":
      main()
